@@ -1,4 +1,5 @@
 
+module.exports = {creationOfUser};
 const User = require("../model/db") ;
 
 
@@ -13,4 +14,3 @@ async function creationOfUser(req, res){
     })
     res.redirect("https://www.youtube.com/watch?v=OWeruyqhiTo&list=PLinedj3B30sDby4Al-i13hQJGQoRQDfPo&index=23");
 }
-module.exports = {creationOfUser};
