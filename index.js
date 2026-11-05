@@ -2,14 +2,17 @@ const express = require('express');
 
 const app = express();
 const router = require('./routes/routes');
+const cookieParser = require("cookie-parser") ;
 const connectDB = require('./model/dbconnector');
 
 const cors = require('cors');
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use("/", router);
+
 
 
 
