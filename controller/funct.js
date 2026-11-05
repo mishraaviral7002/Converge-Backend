@@ -3,6 +3,7 @@ const User = require("../model/db") ;
 const Dashboard = require("../model/dashboards");
 const {v4 : uuidv4} = require("uuid")
 const { getUserfromMap,setUserfromMap} = require("../service/auth");
+const { nanoid } = require('nanoid');
 
 async function creationOfUser(req, res){
     const {name, email, password} = req.body;
@@ -55,10 +56,13 @@ async function creationOfWhiteBoard(req, res) {
 
         const email = req.user.email;
         const {dashBoardname, aboutDashboard } = req.body;
+        const generateCode = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 9);
+        const myRoomCode = generateCode();
         const dashBoard = await Dashboard.create({
             email,
             dashBoardname,
-            aboutDashboard
+            aboutDashboard,
+            myRoomCode,
 
         });
         res.json({
@@ -101,5 +105,25 @@ async function retrivingDashBoards(req, res) {
 }
 
 
+async function checkForLoggedIn(req , res ){
+    const email = req.user.email;
+    const user = await User.findOne({
+        email
+    })
 
-module.exports = {creationOfUser, getUser , creationOfWhiteBoard , retrivingDashBoards}
+    return res.status(200).json({
+        success:true,
+        name:user.name ,
+        email:email
+    })
+}
+
+async function logoutUser(req , res){
+    res.clearCookie('uid');
+    sessionIdToUserMap.delete(req.cookies.uid);
+    return res.status(200).json({ success: true, message: "Logged out successfully" });
+}
+
+
+
+module.exports = {creationOfUser, getUser , creationOfWhiteBoard , retrivingDashBoards , checkForLoggedIn ,logoutUser}

@@ -15,7 +15,11 @@ const dashboard = new mongoose.Schema({
         aboutDashboard:{
             type:String,
             required:true,
-        }
+        },
+    myRoomCode:{
+            type:String,
+        required:true,
+    }
 
     } ,
     {timestamps: true}

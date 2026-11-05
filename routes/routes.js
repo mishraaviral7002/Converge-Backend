@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const  {creationOfUser, getUser , creationOfWhiteBoard ,retrivingDashBoards} = require("../controller/funct.js");
+const  {creationOfUser, getUser , creationOfWhiteBoard ,retrivingDashBoards, checkForLoggedIn , logoutUser} = require("../controller/funct.js");
 const {} = require("../middleware/auth");
 const {restrictToLoggedInUserOnly} = require("../middleware/auth");
 
@@ -21,6 +21,8 @@ router.post('/createDashBoard', restrictToLoggedInUserOnly , creationOfWhiteBoar
 
 
 router.get('/getCanvas' , restrictToLoggedInUserOnly , retrivingDashBoards) ;
+router.get('/checkForLoggedIn' , restrictToLoggedInUserOnly , checkForLoggedIn) ;
+router.post('/logout', logoutUser);
 
 
 module.exports = router;
