@@ -8,7 +8,7 @@ const connectDB = require('./model/dbconnector');
 
 const cors = require('cors');
 app.use(cors({
-    origin: 'https://converge-sq19.vercel.app/',
+    origin: 'https://converge-sq19.vercel.app',
     credentials: true
 }));
 
