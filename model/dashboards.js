@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const router = require("../routes/routes");
 
 const dashboard = new mongoose.Schema({
 
@@ -19,6 +18,13 @@ const dashboard = new mongoose.Schema({
     myRoomCode:{
             type:String,
         required:true,
+    },
+    acessto:{
+            type:String,
+    },
+    canvas:{
+            type:Object,
+        default :{}
     }
 
     } ,

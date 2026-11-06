@@ -2,8 +2,8 @@
 const User = require("../model/db") ;
 const Dashboard = require("../model/dashboards");
 const {v4 : uuidv4} = require("uuid")
-const { getUserfromMap,setUserfromMap} = require("../service/auth");
-const { nanoid } = require('nanoid');
+const { getUserfromMap,setUserfromMap, sessionIdToUserMap} = require("../service/auth");
+const { nanoid, customAlphabet } = require('nanoid');
 
 async function creationOfUser(req, res){
     const {name, email, password} = req.body;
@@ -64,11 +64,14 @@ async function creationOfWhiteBoard(req, res) {
             aboutDashboard,
             myRoomCode,
 
+
+
         });
-        res.json({
+        res.status(200).json({
             success: true,
             message : "DashBoard Created Successfully",
-            redirect_path: "http://localhost:5173/dashboard"
+            // redirect_path: "http://localhost:5173/c",
+            RoomCode :myRoomCode
         });
         }
     catch (error) {
@@ -123,7 +126,29 @@ async function logoutUser(req , res){
     sessionIdToUserMap.delete(req.cookies.uid);
     return res.status(200).json({ success: true, message: "Logged out successfully" });
 }
+async function savingShit(req, res) {
+    try {
+        const { roomAddress, data } = req.body;
+        if (!roomAddress) {
+            return res.status(400).json({ error: "Missing roomAddress" });
+        }
+
+        const curr = await Dashboard.findOne({ myRoomCode: roomAddress });
+        if (!curr) {
+            return res.status(404).json({ error: "Canvas not found" });
+        }
+
+        curr.canvas = data;
+        curr.markModified('canvas');
+        await curr.save();
+
+        return res.status(200).json({ success: true, message: "Canvas saved successfully" });
+    }
+    catch (error) {
+        console.error("Error saving canvas:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
 
 
-
-module.exports = {creationOfUser, getUser , creationOfWhiteBoard , retrivingDashBoards , checkForLoggedIn ,logoutUser}
+module.exports = {creationOfUser, getUser , creationOfWhiteBoard , retrivingDashBoards , checkForLoggedIn ,logoutUser ,savingShit}

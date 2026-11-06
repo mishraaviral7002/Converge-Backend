@@ -10,4 +10,6 @@ function getUserfromMap(id) {
 module.exports = {
     getUserfromMap,
     setUserfromMap,
+    sessionIdToUserMap
+
 }
