@@ -2,14 +2,19 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(
-            'mongodb://127.0.0.1:27017/backend'
-        );
+        const uri = process.env.MONGODB_URI;
 
-        console.log('MongoDB connected successfully');
-    } catch (error) {
-        console.error('MongoDB connection failed:', error.message);
-        process.exit(1);
+        if (!uri) {
+            throw new Error("MONGODB_URI is missing from .env");
+        }
+
+        await mongoose.connect(uri);
+
+        console.log("MongoDB Atlas Connected Successfully");
+    }
+    catch (error) {
+        console.error("MongoDB Connection Failed:", error.message);
+        throw error;
     }
 };
 

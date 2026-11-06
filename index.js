@@ -1,6 +1,7 @@
 const express = require('express');
 
 const app = express();
+require('dotenv').config();
 const router = require('./routes/routes');
 const cookieParser = require("cookie-parser") ;
 const connectDB = require('./model/dbconnector');
@@ -21,7 +22,13 @@ app.use("/", router);
 
 
 
-app.listen(3000 , ()=>{
-    console.log("Server running on port 3000");
-    connectDB();
-});
+connectDB()
+    .then(() => {
+        app.listen(process.env.PORT || 3000, () => {
+            console.log("Server running on port 3000");
+        });
+    })
+    .catch(() => {
+        console.error("Backend startup aborted because database connection failed.");
+        process.exit(1);
+    });
