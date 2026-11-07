@@ -6,47 +6,45 @@ const { getUserfromMap,setUserfromMap, sessionIdToUserMap} = require("../service
 const { nanoid, customAlphabet } = require('nanoid');
 
 async function creationOfUser(req, res){
-    const {name, email, password} = req.body;
-    await User.create({
-        name,
-        email,
-        password
-    })
-    res.redirect("https://converge-sq19.vercel.app/Login");
+    try {
+        const {name, email, password} = req.body;
+        await User.create({
+            name,
+            email,
+            password
+        });
+        return res.status(200).json({ success: true, message: "User registered successfully" });
+    } catch (error) {
+        console.error("Error creating user:", error);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
 }
 
 async function getUser(req, res) {
-
     try {
         const {email, password} = req.body;
         const user = await User.findOne({
             email,
             password
-        })
+        });
         if (user != null) {
             const sessionId = uuidv4();
             setUserfromMap(sessionId, user);
-            res.cookie("uid" ,sessionId);
+            res.cookie("uid", sessionId, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none',
+                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+            });
 
-            return res.send("Logged In");
-
-
+            return res.status(200).json({ success: true, message: "Logged In" });
         } else {
-            return res.redirect("https://converge-sq19.vercel.app/");
-
-
-
-
-
-
-    }
-}
-catch (error) {
+            return res.status(401).json({ success: false, message: "Invalid email or password" });
+        }
+    } catch (error) {
         console.error("Error fetching user:", error);
         return res.status(500).json({ error: "Internal Server Error" });
     }
-
-
 }
 
 
@@ -109,21 +107,35 @@ async function retrivingDashBoards(req, res) {
 
 
 async function checkForLoggedIn(req , res ){
-    const email = req.user.email;
-    const user = await User.findOne({
-        email
-    })
+    try {
+        const email = req.user.email;
+        const user = await User.findOne({
+            email
+        });
+        if (!user) {
+            return res.status(401).json({ success: false, message: "User not found" });
+        }
 
-    return res.status(200).json({
-        success:true,
-        name:user.name ,
-        email:email
-    })
+        return res.status(200).json({
+            success: true,
+            name: user.name,
+            email: email
+        });
+    } catch (error) {
+        console.error("Error in checkForLoggedIn:", error);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
 }
 
 async function logoutUser(req , res){
-    res.clearCookie('uid');
-    sessionIdToUserMap.delete(req.cookies.uid);
+    res.clearCookie('uid', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+    });
+    if (req.cookies && req.cookies.uid) {
+        sessionIdToUserMap.delete(req.cookies.uid);
+    }
     return res.status(200).json({ success: true, message: "Logged out successfully" });
 }
 async function savingShit(req, res) {
